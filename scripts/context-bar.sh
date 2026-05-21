@@ -98,8 +98,8 @@ fi
 transcript_path=$(echo "$input" | jq -r '.transcript_path // empty')
 
 # Rate limits (matches Settings->usage display)
-five_hr_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // 0')
-seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // 0')
+five_hr_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // 0 | floor')
+seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // 0 | floor')
 five_hr_resets=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // 0')
 seven_day_resets=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // 0')
 
