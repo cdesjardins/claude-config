@@ -1,0 +1,22 @@
+# Auth
+.credentials.json
+
+# Conversation history and transcripts
+history.jsonl
+projects/
+sessions/
+
+# Ephemeral / machine-local
+cache/
+backups/
+file-history/
+shell-snapshots/
+telemetry/
+paste-cache/
+tasks/
+.last-cleanup
+
+# Plugin cache (installed_plugins.json and known_marketplaces.json are kept)
+plugins/cache/
+plugins/data/
+plugins/marketplaces/
