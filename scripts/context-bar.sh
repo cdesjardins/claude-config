@@ -28,6 +28,13 @@ model=$(echo "$input" | jq -r '.model.display_name // .model.id // "?"')
 cwd=$(echo "$input" | jq -r '.cwd // empty')
 dir=$(basename "$cwd" 2>/dev/null || echo "?")
 
+# Account subscription tier (Pro, Team, Max, ...) from credentials
+tier=$(jq -r '.claudeAiOauth.subscriptionType // empty' ~/.claude/.credentials.json 2>/dev/null)
+if [[ -n "$tier" ]]; then
+    # Title-case the first letter for display
+    tier="$(tr '[:lower:]' '[:upper:]' <<< "${tier:0:1}")${tier:1}"
+fi
+
 # Get git branch, uncommitted file count, and sync status
 branch=""
 git_status=""
@@ -141,8 +148,10 @@ seven_day_bar=$(make_bar "$seven_day_pct")
 
 ctx="${five_hr_bar} ${C_GRAY}session ${five_hr_pct}% resets ${five_hr_reset_str} | ${seven_day_bar} ${C_GRAY}weekly ${seven_day_pct}% resets ${seven_day_reset_str}"
 
-# Build output: Model | Dir | Branch (uncommitted) | Context
-output="${C_ACCENT}${model}${C_GRAY} | 📁${dir}"
+# Build output: Tier | Model | Dir | Branch (uncommitted) | Context
+output=""
+[[ -n "$tier" ]] && output+="${C_ACCENT}🏷️  ${tier}${C_GRAY} | "
+output+="${C_ACCENT}${model}${C_GRAY} | 📁${dir}"
 [[ -n "$branch" ]] && output+=" | 🔀${branch} ${git_status}"
 output+=" | ${ctx}${C_RESET}"
 
@@ -151,7 +160,9 @@ printf '%b\n' "$output"
 # Get user's last message (text only, not tool results, skip unhelpful messages)
 if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
     # Calculate visible length (without ANSI codes) - 10 chars for bar + content
-    plain_output="${model} | 📁${dir}"
+    plain_output=""
+    [[ -n "$tier" ]] && plain_output+="🏷️  ${tier} | "
+    plain_output+="${model} | 📁${dir}"
     [[ -n "$branch" ]] && plain_output+=" | 🔀${branch} ${git_status}"
     plain_output+=" | xxxxx session ${five_hr_pct}% resets ${five_hr_reset_str} | xxxxx weekly ${seven_day_pct}% resets ${seven_day_reset_str}"
     max_len=${#plain_output}
