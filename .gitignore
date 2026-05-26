@@ -15,6 +15,8 @@ telemetry/
 paste-cache/
 tasks/
 .last-cleanup
+mcp-needs-auth-cache.json
+policy-limits.json
 
 # Plugin cache (installed_plugins.json and known_marketplaces.json are kept)
 plugins/cache/
